@@ -1,0 +1,57 @@
+import { Link } from "react-router-dom";
+
+export default function Sidebar() {
+  const menuItems = [
+    {
+      icons: (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 15 15"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.125 5.625V1.875H13.125V5.625H8.125ZM1.875 8.125V1.875H6.875V8.125H1.875ZM8.125 13.125V6.875H13.125V13.125H8.125ZM1.875 13.125V9.375H6.875V13.125H1.875Z"
+            fill="white"
+          />
+        </svg>
+      ),
+      name: "Dashboard",
+      url: "/dashboard",
+    },
+    {
+      icons: (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 15 15"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M2.34375 2.10938H6.79687C6.92632 2.10938 7.03125 2.21431 7.03125 2.34375V6.79688C7.03125 6.92633 6.92632 7.03125 6.79687 7.03125H2.34375C2.2143 7.03125 2.10938 6.92633 2.10938 6.79688V2.34375C2.10938 2.21431 2.2143 2.10938 2.34375 2.10938ZM10.6101 1.73829L13.2617 4.38995C13.3532 4.48147 13.3532 4.62986 13.2617 4.7214L10.6101 7.37305C10.5185 7.46457 10.3701 7.46457 10.2786 7.37305L7.62696 4.72139C7.53543 4.62986 7.53543 4.48147 7.62696 4.38994L10.2786 1.73829C10.3701 1.64677 10.5185 1.64677 10.6101 1.73829ZM2.34375 7.96875H6.79687C6.92632 7.96875 7.03125 8.07368 7.03125 8.20313V12.6563C7.03125 12.7857 6.92632 12.8906 6.79687 12.8906H2.34375C2.2143 12.8906 2.10938 12.7857 2.10938 12.6563V8.20313C2.10938 8.07368 2.2143 7.96875 2.34375 7.96875ZM8.20312 7.96875H12.6562C12.7857 7.96875 12.8906 8.07368 12.8906 8.20313V12.6563C12.8906 12.7857 12.7857 12.8906 12.6562 12.8906H8.20312C8.07368 12.8906 7.96875 12.7857 7.96875 12.6563V8.20313C7.96875 8.07368 8.07368 7.96875 8.20312 7.96875Z"
+            fill="white"
+          />
+        </svg>
+      ),
+      name: "Produk",
+      url: "/Produk",
+    },
+  ];
+
+  return (
+    <div className="flex flex-col w-full px-4 py-6 space-y-4">
+      {menuItems.map((item, index) => (
+        <Link key={index} to={item.url} className="flex gap-2 bg-gray-900 hover:bg-primary-me rounded rounded-sm items-center w-full h-fit px-2 py-2">
+          {item.icons}
+          <span className="text-white">
+            {item.name}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
+}
