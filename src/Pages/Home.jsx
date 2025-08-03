@@ -1,160 +1,462 @@
+import { useState, useEffect, useRef } from "react";
+import {
+  Plus,
+  AlertTriangle,
+  ShoppingCart,
+  Users,
+  TrendingUp,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import * as Chart from "chart.js";
+import ChartCard from "../Components/UI/ChartCard";
 import LineChart from "../Components/UI/LineChart";
-import { Link } from "react-router-dom";
-import { CardOne } from "../Components/UI/Card";
-import {Product} from "@/Mock/mock"
-export default function Home() {
+import DoughnutChart from "../Components/UI/DonatChart";
+// import BarChart from '../Components/UI/ChartCard';
+
+// Register Chart.js components
+Chart.Chart.register(
+  Chart.CategoryScale,
+  Chart.LinearScale,
+  Chart.PointElement,
+  Chart.LineElement,
+  Chart.BarElement,
+  Chart.ArcElement,
+  Chart.Title,
+  Chart.Tooltip,
+  Chart.Legend,
+  Chart.Filler,
+  Chart.LineController,
+  Chart.BarController,
+  Chart.DoughnutController
+);
+
+const BarChart = ({ data, height = "h-64", formatValue }) => {
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.destroy();
+      chartInstance.current = null;
+    }
+
+    if (chartRef.current && data) {
+      const ctx = chartRef.current.getContext("2d");
+      chartInstance.current = new Chart.Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: data.labels,
+          datasets: data.datasets,
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback:
+                  formatValue ||
+                  function (value) {
+                    return (value / 1000000).toFixed(0) + "M";
+                  },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+        chartInstance.current = null;
+      }
+    };
+  }, [data, formatValue]);
+
   return (
-    <div className="grid grid-cols-3 mt-[87px] grid-rows-3 gap-2 w-full h-full">
-      <div className="flex items-center justify-center col-span-2 gap-2">
-        <div className="flex-1 rounded rounded-md flex flex-col justify-between h-full relative bg-primary-me text-white w-full p-2">
-          <h4 className="text-4xl font-bold">Stok Barang</h4>
-          <p className="absolute right-4 top-7">
-            <svg
-              width="80"
-              height="80"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M2.34375 2.10938H6.79687C6.92632 2.10938 7.03125 2.21431 7.03125 2.34375V6.79688C7.03125 6.92633 6.92632 7.03125 6.79687 7.03125H2.34375C2.2143 7.03125 2.10938 6.92633 2.10938 6.79688V2.34375C2.10938 2.21431 2.2143 2.10938 2.34375 2.10938ZM10.6101 1.73829L13.2617 4.38995C13.3532 4.48147 13.3532 4.62986 13.2617 4.7214L10.6101 7.37305C10.5185 7.46457 10.3701 7.46457 10.2786 7.37305L7.62696 4.72139C7.53543 4.62986 7.53543 4.48147 7.62696 4.38994L10.2786 1.73829C10.3701 1.64677 10.5185 1.64677 10.6101 1.73829ZM2.34375 7.96875H6.79687C6.92632 7.96875 7.03125 8.07368 7.03125 8.20313V12.6563C7.03125 12.7857 6.92632 12.8906 6.79687 12.8906H2.34375C2.2143 12.8906 2.10938 12.7857 2.10938 12.6563V8.20313C2.10938 8.07368 2.2143 7.96875 2.34375 7.96875ZM8.20312 7.96875H12.6562C12.7857 7.96875 12.8906 8.07368 12.8906 8.20313V12.6563C12.8906 12.7857 12.7857 12.8906 12.6562 12.8906H8.20312C8.07368 12.8906 7.96875 12.7857 7.96875 12.6563V8.20313C7.96875 8.07368 8.07368 7.96875 8.20312 7.96875Z"
-                fill="white"
-              />
-            </svg>
-          </p>
-          <div className="flex flex-col gap-2">
-            <h3 className="font-bold font-poppins text-6xl">1203</h3>
-            <p className="flex text-gray-300 font-semibold items-center gap-4">
-              <span className="flex items-center gap-2">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 8 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3.85449 1L0.854492 4M3.85449 1L6.85449 4M3.85449 1V6.25M3.85449 9V7.75"
-                    stroke=" #1AB54E"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <span className="text-[#1AB54E]">8,9%</span>
-              </span>
-              Last the week
-            </p>
-          </div>
-        </div>
+    <div className={height}>
+      <canvas ref={chartRef}></canvas>
+    </div>
+  );
+};
 
-        <div className="flex-1 rounded rounded-md flex flex-col justify-between h-full relative bg-primary-me text-white w-full p-2">
-          <h4 className="text-4xl font-bold">Total Month</h4>
-          <p className="text-[80px] font-bold absolute right-4 top-4">$</p>
-          <div className="flex flex-col gap-2">
-            <h3 className="font-bold font-poppins text-6xl">1203</h3>
-            <p className="flex text-gray-300 font-semibold items-center gap-4">
-              <span className="flex items-center gap-2">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 8 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3.85449 1L0.854492 4M3.85449 1L6.85449 4M3.85449 1V6.25M3.85449 9V7.75"
-                    stroke=" #1AB54E"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <span className="text-[#1AB54E]">8,9%</span>
-              </span>
-              Last the week
-            </p>
+// Stat Card Component (already exists but keeping it here for completeness)
+const StatCard = ({ title, value, color, icon: Icon, percentage, trend }) => (
+  <div
+    className={`${color} rounded-lg p-4 text-white relative overflow-hidden`}
+  >
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm opacity-90">{title}</p>
+        <p className="text-2xl font-bold">{value}</p>
+        {percentage && (
+          <div className="flex items-center mt-1">
+            <span className="text-xs opacity-75">{percentage} • 2025</span>
           </div>
-        </div>
+        )}
+      </div>
+      <Icon className="w-8 h-8 opacity-75" />
+    </div>
+  </div>
+);
 
-        <div className="flex-1 rounded rounded-md flex flex-col justify-between h-full relative bg-primary-me text-white w-full p-2">
-          <h4 className="text-4xl font-bold">Revenue</h4>
-          <p className="absolute right-4 top-7">
-            <svg
-              width="80"
-              height="80"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M2.34375 2.10938H6.79687C6.92632 2.10938 7.03125 2.21431 7.03125 2.34375V6.79688C7.03125 6.92633 6.92632 7.03125 6.79687 7.03125H2.34375C2.2143 7.03125 2.10938 6.92633 2.10938 6.79688V2.34375C2.10938 2.21431 2.2143 2.10938 2.34375 2.10938ZM10.6101 1.73829L13.2617 4.38995C13.3532 4.48147 13.3532 4.62986 13.2617 4.7214L10.6101 7.37305C10.5185 7.46457 10.3701 7.46457 10.2786 7.37305L7.62696 4.72139C7.53543 4.62986 7.53543 4.48147 7.62696 4.38994L10.2786 1.73829C10.3701 1.64677 10.5185 1.64677 10.6101 1.73829ZM2.34375 7.96875H6.79687C6.92632 7.96875 7.03125 8.07368 7.03125 8.20313V12.6563C7.03125 12.7857 6.92632 12.8906 6.79687 12.8906H2.34375C2.2143 12.8906 2.10938 12.7857 2.10938 12.6563V8.20313C2.10938 8.07368 2.2143 7.96875 2.34375 7.96875ZM8.20312 7.96875H12.6562C12.7857 7.96875 12.8906 8.07368 12.8906 8.20313V12.6563C12.8906 12.7857 12.7857 12.8906 12.6562 12.8906H8.20312C8.07368 12.8906 7.96875 12.7857 7.96875 12.6563V8.20313C7.96875 8.07368 8.07368 7.96875 8.20312 7.96875Z"
-                fill="white"
-              />
-            </svg>
-          </p>
-          <div className="flex flex-col gap-2">
-            <h3 className="font-bold font-poppins text-6xl">1203</h3>
-            <p className="flex text-gray-300 font-semibold items-center gap-4">
-              <span className="flex items-center gap-2">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 8 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3.85449 1L0.854492 4M3.85449 1L6.85449 4M3.85449 1V6.25M3.85449 9V7.75"
-                    stroke=" #1AB54E"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <span className="text-[#1AB54E]">8,9%</span>
-              </span>
-              Last the week
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="col-span-2 bg-gray-300 row-span-2 col-start-1 row-start-2">
-        3
-      </div>
-      <div className="row-span-3 gap-2 flex flex-col col-start-3 row-start-1">
-        <Link className="flex text-white gap-4 justify-center hover:bg-primary-me-hover font-bold items-center py-2 px-4 bg-primary-me rounded rounded-md">
-          <svg
-            width="45"
-            height="45"
-            viewBox="0 0 45 45"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M22.5 4.21875C12.42 4.21875 4.21875 12.42 4.21875 22.5C4.21875 32.58 12.42 40.7812 22.5 40.7812C32.58 40.7812 40.7812 32.58 40.7812 22.5C40.7812 12.42 32.58 4.21875 22.5 4.21875ZM22.5 7.03125C31.0598 7.03125 37.9688 13.9402 37.9688 22.5C37.9688 31.0598 31.0598 37.9688 22.5 37.9688C13.9402 37.9688 7.03125 31.0598 7.03125 22.5C7.03125 13.9402 13.9402 7.03125 22.5 7.03125ZM21.0938 14.0625V21.0938H14.0625V23.9062H21.0938V30.9375H23.9062V23.9062H30.9375V21.0938H23.9062V14.0625H21.0938Z"
-              fill="white"
+const Home = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedYear, setSelectedYear] = useState("2025");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Chart data preparation
+  const monthlyData = [
+    { month: "Jan", 2024: 80000000000, 2025: 90000000000 },
+    { month: "Feb", 2024: 50000000000, 2025: 70000000000 },
+    { month: "Mar", 2024: 70000000000, 2025: 85000000000 },
+    { month: "Apr", 2024: 90000000000, 2025: 60000000000 },
+    { month: "May", 2024: 40000000000, 2025: 45000000000 },
+    { month: "Jun", 2024: 60000000000, 2025: 80000000000 },
+    { month: "Jul", 2024: 55000000000, 2025: 75000000000 },
+    { month: "Aug", 2024: 45000000000, 2025: 65000000000 },
+    { month: "Sep", 2024: 85000000000, 2025: 95000000000 },
+    { month: "Oct", 2024: 95000000000, 2025: 110000000000 },
+    { month: "Nov", 2024: 110000000000, 2025: 130000000000 },
+    { month: "Dec", 2024: 160000000000, 2025: 150000000000 },
+  ];
+
+  const pieData = [
+    { name: "Pilus Balado Ajisan", value: 59239.9, color: "#8B5CF6" },
+    { name: "Cimo", value: 50532.06, color: "#06B6D4" },
+    { name: "Pisang Corin", value: 54163.8, color: "#F87171" },
+  ];
+
+  // Prepared chart data objects
+  const monthlyChartData = {
+    labels: monthlyData.map((item) => item.month),
+    datasets: [
+      {
+        label: "2025",
+        data: monthlyData.map((item) => item[2025]),
+        borderColor: "#8B5CF6",
+        backgroundColor: "rgba(139, 92, 246, 0.1)",
+      },
+      {
+        label: "2024",
+        data: monthlyData.map((item) => item[2024]),
+        borderColor: "#F87171",
+        backgroundColor: "rgba(248, 113, 113, 0.1)",
+      },
+    ],
+  };
+
+  const doughnutChartData = {
+    labels: pieData.map((item) => item.name),
+    values: pieData.map((item) => item.value),
+    colors: pieData.map((item) => item.color),
+  };
+
+  const barChartData = {
+    labels: ["Penjualan Pertahun"],
+    datasets: [
+      {
+        label: "2025",
+        data: [900000000],
+        backgroundColor: "#8B5CF6",
+      },
+      {
+        label: "2024",
+        data: [450000000],
+        backgroundColor: "#F87171",
+      },
+    ],
+  };
+
+  const topSellingItems = Array(20)
+    .fill()
+    .map((_, i) => ({
+      id: i + 1,
+      name: "Krupuk Singkong",
+      quantity: 12,
+    }));
+
+  const bestSellerData = [
+    {
+      no: 1,
+      name: "Ayuna Pramola",
+      item: "1233",
+      price: "123000000000",
+      date: "2025-02-23",
+      contributor: "Lunas",
+    },
+    {
+      no: 2,
+      name: "Jura Ismail",
+      item: "1231",
+      price: "512900000000",
+      date: "2025-11-15",
+      contributor: "Lunas",
+    },
+    {
+      no: 3,
+      name: "Sopjo Jar",
+      item: "12314",
+      price: "612900000000",
+      date: "2025-06-23",
+      contributor: "Lunas",
+    },
+  ];
+
+  const recentSales = Array(15)
+    .fill()
+    .map((_, i) => ({
+      no: i + 1,
+      customerName:
+        i === 0 ? "Ayuna Pramola" : i === 1 ? "Jura Ismail" : "Sopjo Jar",
+      itemCode: i === 0 ? "1233" : i === 1 ? "1231" : "12314",
+      value:
+        i === 0 ? "123000000000" : i === 1 ? "512900000000" : "612900000000",
+      transactionDate: "2025-06-21",
+      status: "Lunas",
+    }));
+
+  // Responsive check
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(recentSales.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = recentSales.slice(startIndex, startIndex + itemsPerPage);
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+      <div className="grid grid-cols-4 w-full h-full grid-rows-4 gap-4">
+        <div className="col-span-3">
+          <div className="grid grid-cols-3 w-full h-full grid-rows-2 gap-4">
+            <StatCard
+              title="Total Item terjual"
+              value="1200"
+              color="bg-blue-500"
+              icon={ShoppingCart}
+              percentage="-7.92%"
             />
-          </svg>
-
-          <span className="text-3xl">Tambah Orderan</span>
-        </Link>
-        <div className="flex gap-2 items-center justify-center w-full flex-col">
-          <h2 className="font-semibold text-xl">Popular Order</h2>
-          <div className="overflow-y-auto gap-2 flex flex-col w-full max-h-[900px]">
-            {Product.map((item, id) => (
-              <CardOne id={id}
-              url={item.url}
-              image={item.image}
-              name={item.name}
-              sisaBarang={item.sisaBarang}
-              sold={item.sold}
-              />
-            ))}
+            <StatCard
+              title="Revenue"
+              value="329392"
+              color="bg-green-500"
+              icon={TrendingUp}
+              percentage="-16.24%"
+            />
+            <StatCard
+              title="Total Transaksi"
+              value="1200"
+              color="bg-red-500"
+              icon={ShoppingCart}
+              percentage="+3.48%"
+            />
+            <StatCard
+              title="Stok Warning"
+              value="3"
+              color="bg-yellow-500"
+              icon={AlertTriangle}
+            />
+            <StatCard
+              title="Pelanggan Baru"
+              value="1200"
+              color="bg-teal-500"
+              icon={Users}
+              percentage="+8.52%"
+            />
+            <StatCard
+              title="Pelanggan aktif"
+              value="1200"
+              color="bg-indigo-500"
+              icon={Users}
+              percentage="+8.52%"
+            />
           </div>
+        </div>
+        <div className="row-span-4 col-start-4">
+          <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 w-full justify-center">
+            <Plus className="w-5 h-5" />
+            Tambah Order
+          </button>
+          {/* Top Selling Items */}
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Stok menipis</h3>
+              <button className="text-blue-500 text-sm">Lihat Semua</button>
+            </div>
+            <div className="space-y-3 max-h-64 overflow-y-auto">
+              {topSellingItems.slice(0, 8).map((item, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
+                    </div>
+                    <span className="text-sm">{item.name}</span>
+                  </div>
+                  <span className="text-sm font-medium">{item.quantity}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Best Seller */}
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Barang Best Seller</h3>
+              <button className="text-blue-500 text-sm">Lihat Semua</button>
+            </div>
+            <div className="space-y-3">
+              {topSellingItems.slice(0, 8).map((item, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
+                    </div>
+                    <span className="text-sm">{item.name}</span>
+                  </div>
+                  <span className="text-sm font-medium">{item.quantity}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="col-span-2 row-start-2">
+          <ChartCard>
+            <LineChart data={monthlyChartData} />
+          </ChartCard>
+        </div>
+        <div className="col-start-3 row-start-2">
+          {/* Bar Chart */}
+          <ChartCard className="h-full" title="Penjualan Barang terbesar">
+            <BarChart data={barChartData} />
+          </ChartCard>
+        </div>
+        <div className="col-span-2 col-start-2 row-start-3">
+          <ChartCard
+            className="h-full"
+            title="Penjualan Barang terbesar"
+            showYearSelector={true}
+            selectedYear={selectedYear}
+            onYearChange={setSelectedYear}
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">No</th>
+                    <th className="text-left p-2">Nama Barang</th>
+                    <th className="text-left p-2">Harga Satuan</th>
+                    <th className="text-left p-2">Jumlah</th>
+                    <th className="text-left p-2">Total</th>
+                    <th className="text-left p-2">Kontribusi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bestSellerData.map((item) => (
+                    <tr key={item.no} className="border-b">
+                      <td className="p-2">{item.no}</td>
+                      <td className="p-2">{item.name}</td>
+                      <td className="p-2">{item.item}</td>
+                      <td className="p-2">{item.price}</td>
+                      <td className="p-2">{item.date}</td>
+                      <td className="p-2">{item.contributor}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-center items-center gap-2 mt-4">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                className="p-1 rounded hover:bg-gray-100"
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              {[1, 2, 3, 4, 5].map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 rounded text-sm ${
+                    currentPage === page
+                      ? "bg-blue-500 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              <span className="text-sm text-gray-500">... 123</span>
+              <button
+                onClick={() =>
+                  setCurrentPage(Math.min(totalPages, currentPage + 1))
+                }
+                className="p-1 rounded hover:bg-gray-100"
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </ChartCard>
+        </div>
+        <div className="col-start-1 row-start-3">
+          <ChartCard className="h-full items-center flex flex-col justify-center">
+            <DoughnutChart data={doughnutChartData} />
+          </ChartCard>
+        </div>
+        <div className="col-span-3 row-start-4">
+          <ChartCard
+            title="Penjualan terbaru"
+            showYearSelector={true}
+            selectedYear={selectedYear}
+            onYearChange={setSelectedYear}
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">No</th>
+                    <th className="text-left p-2">Nama Pembeli</th>
+                    <th className="text-left p-2">Jml_Item</th>
+                    <th className="text-left p-2">Nilai</th>
+                    <th className="text-left p-2">Tanggal Transaksi</th>
+                    <th className="text-left p-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.map((item) => (
+                    <tr key={item.no} className="border-b">
+                      <td className="p-2">{item.no}</td>
+                      <td className="p-2">{item.customerName}</td>
+                      <td className="p-2">{item.itemCode}</td>
+                      <td className="p-2">{item.value}</td>
+                      <td className="p-2">{item.transactionDate}</td>
+                      <td className="p-2">{item.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ChartCard>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Home;

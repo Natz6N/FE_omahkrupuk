@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as Chart from 'chart.js';
-const LineChart = ({ data, height = "h-64 md:h-80" }) => {
+const DoughnutChart = ({ data, height = "h-64" }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -13,14 +13,14 @@ const LineChart = ({ data, height = "h-64 md:h-80" }) => {
     if (chartRef.current && data) {
       const ctx = chartRef.current.getContext('2d');
       chartInstance.current = new Chart.Chart(ctx, {
-        type: 'line',
+        type: 'doughnut',
         data: {
           labels: data.labels,
-          datasets: data.datasets.map(dataset => ({
-            ...dataset,
-            tension: 0.4,
-            fill: true
-          }))
+          datasets: [{
+            data: data.values,
+            backgroundColor: data.colors,
+            borderWidth: 0
+          }]
         },
         options: {
           responsive: true,
@@ -28,16 +28,6 @@ const LineChart = ({ data, height = "h-64 md:h-80" }) => {
           plugins: {
             legend: {
               position: 'bottom'
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                callback: function(value) {
-                  return (value / 1000000000).toFixed(0) + 'B';
-                }
-              }
             }
           }
         }
@@ -59,4 +49,4 @@ const LineChart = ({ data, height = "h-64 md:h-80" }) => {
   );
 };
 
-export default LineChart;
+export default DoughnutChart;

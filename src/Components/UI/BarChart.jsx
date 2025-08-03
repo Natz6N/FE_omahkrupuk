@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
-import * as Chart from 'chart.js';
-const LineChart = ({ data, height = "h-64 md:h-80" }) => {
+import * as Chart from "chart.js";
+
+// Bar Chart Component
+const BarChart = ({ data, height = "h-64", formatValue }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -11,36 +13,34 @@ const LineChart = ({ data, height = "h-64 md:h-80" }) => {
     }
 
     if (chartRef.current && data) {
-      const ctx = chartRef.current.getContext('2d');
+      const ctx = chartRef.current.getContext("2d");
       chartInstance.current = new Chart.Chart(ctx, {
-        type: 'line',
+        type: "bar",
         data: {
           labels: data.labels,
-          datasets: data.datasets.map(dataset => ({
-            ...dataset,
-            tension: 0.4,
-            fill: true
-          }))
+          datasets: data.datasets,
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: {
-              position: 'bottom'
-            }
+              position: "bottom",
+            },
           },
           scales: {
             y: {
               beginAtZero: true,
               ticks: {
-                callback: function(value) {
-                  return (value / 1000000000).toFixed(0) + 'B';
-                }
-              }
-            }
-          }
-        }
+                callback:
+                  formatValue ||
+                  function (value) {
+                    return (value / 1000000).toFixed(0) + "M";
+                  },
+              },
+            },
+          },
+        },
       });
     }
 
@@ -50,7 +50,7 @@ const LineChart = ({ data, height = "h-64 md:h-80" }) => {
         chartInstance.current = null;
       }
     };
-  }, [data]);
+  }, [data, formatValue]);
 
   return (
     <div className={height}>
@@ -58,5 +58,4 @@ const LineChart = ({ data, height = "h-64 md:h-80" }) => {
     </div>
   );
 };
-
-export default LineChart;
+export default BarChart;

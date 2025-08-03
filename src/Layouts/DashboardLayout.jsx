@@ -72,7 +72,7 @@ export default function DashboardLayouts() {
     <div className="flex flex-col min-h-screen w-full">
       {/* Top Navbar dengan tombol fullscreen */}
       <div className="relative">
-        <Navbar />
+        {/* <Navbar /> */}
         {/* Tombol Fullscreen */}
         <button
           onClick={toggleFullscreen}
