@@ -12,3 +12,9 @@ export const CardOne = ({url, id, image, name, sisaBarang, sold }) => {
     </a>
   );
 };
+
+export const CardProductOne = ()=>{
+  return(
+    <></>
+  )
+}

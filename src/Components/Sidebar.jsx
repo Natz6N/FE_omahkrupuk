@@ -18,7 +18,7 @@ export default function Sidebar() {
         </svg>
       ),
       name: "Dashboard",
-      url: "/dashboard",
+      url: "/",
     },
     {
       icons: (
@@ -38,7 +38,7 @@ export default function Sidebar() {
         </svg>  
       ),
       name: "Produk",
-      url: "/Produk",
+      url: "/Product",
     },
     {
       icons: (
@@ -57,8 +57,8 @@ export default function Sidebar() {
           />
           </svg>  
       ),
-      name: "Produk",
-      url: "/Produk",
+      name: "Kasir",
+      url: "/Kasir",
     },
   ];
 

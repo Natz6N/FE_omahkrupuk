@@ -124,12 +124,6 @@ export default function DashboardLayouts() {
 
         {/* Main Content */}
         <main className="flex-1 h-screen overflow-y-scroll p-4">
-          {/* Indikator fullscreen status */}
-          {isFullscreen && (
-            <div className="fixed top-2 left-1/2 transform -translate-x-1/2 z-40 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm">
-              Fullscreen Mode Active - Press F11 or ESC to exit
-            </div>
-          )}
           <Outlet />
         </main>
       </div>
